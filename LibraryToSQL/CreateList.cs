@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace LibraryToSQL
 {
@@ -29,11 +28,9 @@ namespace LibraryToSQL
 		/// </summary>
 		public CreateList()
 		{
-			cRUD = new CRUD();
+			cRUD = CRUD.Sourse;
 			Groups = cRUD.Read(selection_group, 1);
 		}
-
-
 
 		/// <summary>
 		/// Retrieving information from the entire table
@@ -57,23 +54,33 @@ namespace LibraryToSQL
 				"FROM [Students] WHERE Mark_1 < 4 AND Mark_2 < 4 AND Mark_3 < 4";
 			List<string> Students = cRUD.Read(selection, 6);
 
-			string[] StudentsOut = new string[Students.Count];
+			IEnumerable<string> StudentsOut = from g in Groups
+						from t in Students
+								where t.Split(' ')[2].Trim() == g.Trim()
+									select t;
 
-			// sort
-			int index = 0;
-			int j = 0;
-			while (index < Groups.Count)
-			{
-				for (int i = 0; i < Students.Count; i++)
-					if (Students[i].Split(' ')[2].Trim() == Groups[index].Trim())
-					{
-						StudentsOut[j] = Students[i];
-						j++;
-					}
-				index++;
-			}
+			return StudentsOut.ToArray();
+		}
 
-			return StudentsOut;
+		/// <summary>
+		/// Processing string for find max, min, sum marks amd numerous students specifics group
+		/// </summary>
+		/// <param name="s">String with marks</param>
+		/// <param name="min">Min mark</param>
+		/// <param name="max">Max mark</param>
+		/// <param name="sum">Sum marks</param>
+		/// <param name="numerous">Numerous srecific students</param>
+		private void Processing(string s, ref double min, ref double max, ref double sum, ref int numerous)
+		{
+			double midd = (Convert.ToDouble(s.Split(' ')[1]) +
+							Convert.ToDouble(s.Split(' ')[2]) +
+							Convert.ToDouble(s.Split(' ')[3])) / 3;
+
+			sum += midd;
+			numerous++;
+
+			if (max < midd) max = midd;
+			if (min > midd) min = midd;
 		}
 
 		/// <summary>
@@ -86,34 +93,25 @@ namespace LibraryToSQL
 			string selection = "SELECT StudentGroup, Mark_1, Mark_2, Mark_3 FROM [Students]";
 			List<string> Students = cRUD.Read(selection, 4);
 
-			List<string> Result = Groups;
+			List<string> Result = new List<string>();
 
-			int index = 0, numerous;
+			// I couldn't use linq, complex condition :(
+
+			int numerous;
 			double sum, min, max;
-			while (index < Groups.Count)
+			foreach (string G in Groups)
 			{
 				min = 10;
 				max = 0;
 				sum = 0;
 				numerous = 0;
 				for (int i = 0; i < Students.Count; i++)
-				{
-					if (Students[i].Split(' ')[0].Trim() == Groups[index].Trim())
-					{
-						double midd = (Convert.ToDouble(Students[i].Split(' ')[1]) +
-							Convert.ToDouble(Students[i].Split(' ')[2]) +
-							Convert.ToDouble(Students[i].Split(' ')[3])) / 3;
+					if (Students[i].Split(' ')[0].Trim() == G.Trim())
+						Processing(Students[i], ref min, ref max, ref sum, ref numerous);
 
-						sum += midd;
-						numerous++;
-
-						if (max < midd) max = midd;
-						if (min > midd) min = midd;
-					}
-				}
-				Result[index] += " " + Math.Round((sum / numerous), 1).ToString();
-				Result[index] += " " + Math.Round(min, 1).ToString() + " " + Math.Round(max, 1).ToString();
-				index++;
+				Result.Add( String.Concat(
+					G.Trim(), " ", Math.Round((sum / numerous), 1).ToString(), " ",
+					Math.Round(min, 1).ToString() + " " + Math.Round(max, 1).ToString() ));
 			}
 
 			return Result.ToArray();
@@ -124,7 +122,7 @@ namespace LibraryToSQL
 		/// Students are sorted by group
 		/// </summary>
 		/// <returns>An array with strings containing information about the delivery of the session by students</returns>
-		public StringBuilder[] GetResultSession()
+		public string[] GetResultSession()
 		{
 			string selection = "SELECT SurName, StudentName, StudentGroup, " +
 				"ExamenName_1, Mark_1, ExamenName_2, Mark_2, ExamenName_3, Mark_3 FROM [Students]";
@@ -132,20 +130,12 @@ namespace LibraryToSQL
 
 			StringBuilder[] sb = new StringBuilder[Groups.Count];
 
-			int index = 0;
-			while (index < Groups.Count)
-			{
-				sb[index] = new StringBuilder();
-				for (int i = 0; i < Students.Count; i++)
-					if (Students[i].Split(' ')[2].Trim() == Groups[index].Trim())
-					{
-						sb[index].Append(Students[i]);
-						sb[index].AppendLine();
-					}
-				index++;
-			}
+			IEnumerable<string> Result = from g in Groups
+									 	 from s in Students
+										     where s.Split(' ')[2].Trim() == g.Trim()
+											 select s;
 
-			return sb;
+			return Result.ToArray();
 		}
 
 		/// <summary>

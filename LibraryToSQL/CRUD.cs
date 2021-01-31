@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -11,20 +7,31 @@ namespace LibraryToSQL
 {
 	/// <summary>
 	/// Implementation of the principle CRUD(create, read, update, delete)
+	/// Class-singleton
 	/// </summary>
-	public class CRUD
+	public sealed class CRUD
 	{
 		/// <summary>
 		/// Database connection object
 		/// </summary>
 		private SqlConnection sqlConnection = null;
+
+		/// <summary>
+		/// Static constructor
+		/// </summary>
+		static CRUD() { }
 		/// <summary>
 		/// Initializing a database connection object
 		/// </summary>
-		public CRUD()
+		private CRUD()
 		{
 			sqlConnection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=D:\Учеба\Training\DataBaseTask6\LibraryToSQL\DataBase.mdf;Integrated Security=True");
 		}
+
+		/// <summary>
+		/// Properties for create one instance class
+		/// </summary>
+		public static CRUD Sourse { get => new CRUD(); }
 
 		/// <summary>
 		/// Properties for testing connection
@@ -92,7 +99,7 @@ namespace LibraryToSQL
 					Stud.Add("");
 					for (int i = 0; i < x; i++)
 					{
-						Stud[Stud.Count - 1] += reader.GetValue(i).ToString() + " ";
+						Stud[Stud.Count - 1] += String.Concat(reader.GetValue(i).ToString(), " ");
 					}
 				}
 			}

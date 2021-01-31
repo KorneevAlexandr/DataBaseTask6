@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LibraryToSQL
 {
@@ -14,14 +11,14 @@ namespace LibraryToSQL
 		/// <summary>
 		/// Object for access to database
 		/// </summary>
-		private CRUD cRUD = null;
+		private CRUD cRUD;
 
 		/// <summary>
 		/// Initialization object
 		/// </summary>
 		public DAO()
 		{
-			cRUD = new CRUD();
+			cRUD = CRUD.Sourse;
 		}
 
 		/// <summary>

@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.InteropServices;
-
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace LibraryToSQL
@@ -66,7 +61,6 @@ namespace LibraryToSQL
             xlWorkBook.SaveAs(path, Excel.XlFileFormat.xlOpenXMLWorkbook, misValue,
             misValue, misValue, misValue, Excel.XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue);
 
-
             xlWorkBook.Close(true, misValue, misValue);
             xlApp.Quit();
 
@@ -99,28 +93,18 @@ namespace LibraryToSQL
         /// <param name="path">Path and file name</param>
         public void CreateListResultSession(string path = "ListResultSession.xlsx")
         {
-            StringBuilder[] sb = createList.GetResultSession();
-
-            int size = 0;
-            for (int i = 0; i < sb.Length; i++)
-            {
-                size += sb[i].ToString().Split('\n').Length;
-            }
-            string[] mas = new string[size];
-
-            int index = 0;
-            for (int i = 0; i < sb.Length; i++)
-            {
-                for (int j = 0; j < sb[i].ToString().Split('\n').Length; j++)
-                {
-                    mas[index] = sb[i].ToString().Split('\n')[j];
-                    index++;
-                }
-            }
-
-            CreateExcel(mas, path);
+            CreateExcel(createList.GetResultSession(), path);
         }
 
+        /// <summary>
+        /// Create user report 
+        /// </summary>
+        /// <param name="mas">String mas for table</param>
+        /// <param name="path">Path and file name</param>
+        public void CreateMyList(string[] mas, string path)
+        {
+            CreateExcel(mas, path);
+        }
 
 	}
 }
