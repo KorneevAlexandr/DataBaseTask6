@@ -73,8 +73,6 @@ namespace LibraryToSQL
             Marshal.ReleaseComObject(xlWorkSheet);
             Marshal.ReleaseComObject(xlWorkBook);
             Marshal.ReleaseComObject(xlApp);
-
-            Console.WriteLine("Excel file created , you can find the file d:\\csharp-Excel.xlsx");
         }
 
         /// <summary>

@@ -38,7 +38,7 @@ namespace LibraryToSQL
 		/// <summary>
 		/// Retrieving information from the entire table
 		/// </summary>
-		/// <returns><An array of strings containing each row from a database table/returns>
+		/// <returns>An array of strings containing each row from a database table</returns>
 		public string[] GetAllStudents()
 		{
 			string selection = "SELECT * FROM [Students]";
